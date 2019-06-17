@@ -1,19 +1,34 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Name:</strong>
-  <%= @list.name %>
+<h3><strong>List:</strong>
+  <%= @list.name %></h3>
 </p>
 
-<p>
-  <strong>Description:</strong>
-  <%= @list.description %>
-</p>
 
-<p>
-  <strong>Purchased:</strong>
-  <%= @list.purchased %>
-</p>
+<% if @list.purchased? %>
+<div class="alert alert-success" role="alert">Purchased</div>
+<% else %>
+<div class="alert alert-danger" role="alert">Not purchased</div>
+<% end %>
 
-<%= link_to 'Edit', edit_list_path(@list) %> |
-<%= link_to 'Back', lists_path %>
+
+<table class="table table-striped">
+
+<thead class="thead-dark">
+<th>Nome</th>
+<th>Quantidade</th>
+<th>Ação</th>
+</thead>
+<tbody>
+<% @list.items.each do |item| %>
+<tr>
+  <td> <%= item.name %> </td>
+  <td> <%= item.quantity %> </td>
+  <td><%= link_to 'Delete', list_item_path(@list, item), method: :delete, data: {confirm: 'Are you sure about this?'} %> </td>
+</tr>
+<% end %>
+</tbody>
+</table>
+<button type="button" class="btn btn-outline-success"><%= link_to 'Adicionar Item', new_list_item_path(@list) %></button>
+<button type="button" class="btn btn-outline-info"><%= link_to 'Back', lists_path %></button>
