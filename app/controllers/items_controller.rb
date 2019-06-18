@@ -1,6 +1,5 @@
 class ItemsController < ApplicationController
-  before_action :set_item, only: [:show, :edit, :update, :destroy]
-
+  
   # GET /items
   # GET /items.json
   def index
@@ -10,30 +9,30 @@ class ItemsController < ApplicationController
   # GET /items/1
   # GET /items/1.json
   def show
+    @item = Item.find_by_id(params[:id])
   end
 
   # GET /items/new
   def new
-    @item = Item.new
+    @list = List.find(params[:list_id])
+    @item = @list.items.build
   end
 
   # GET /items/1/edit
   def edit
+    @item = Item.find(params[:id])
   end
 
   # POST /items
   # POST /items.json
   def create
-    @item = Item.new(item_params)
+    @list = List.find(params[:list_id])
+    @item = @list.items.create(item_params)
 
-    respond_to do |format|
-      if @item.save
-        format.html { redirect_to @item, notice: 'Item was successfully created.' }
-        format.json { render :show, status: :created, location: @item }
-      else
-        format.html { render :new }
-        format.json { render json: @item.errors, status: :unprocessable_entity }
-      end
+    if @item.save 
+      redirect_to list_path(@list)
+    else
+      render 'new' 
     end
   end
 
@@ -54,15 +53,18 @@ class ItemsController < ApplicationController
   # DELETE /items/1
   # DELETE /items/1.json
   def destroy
+    @list = List.find(params[:list_id])
+    @item = Item.find(params[:id])
     @item.destroy
-    respond_to do |format|
-      format.html { redirect_to items_url, notice: 'Item was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to list_path(@list)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+  def set_list
+    @list = List.find(params[:list_id])
+  end
+
+  # Use callbacks to share common setup or constraints between actions.
     def set_item
       @item = Item.find(params[:id])
     end
@@ -70,5 +72,5 @@ class ItemsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def item_params
       params.require(:item).permit(:name, :quantity, :list_id)
-    end
+    end 
 end
